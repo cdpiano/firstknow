@@ -38,7 +38,13 @@ async function main() {
 
     console.log(`\n📰 ${events.length} recent event(s) for your holdings:\n`);
     for (const event of events) {
-      const tickers = JSON.parse(event.affected_tickers || '[]').join(', ');
+      let tickers = '';
+      try {
+        const parsed = JSON.parse(event.affected_tickers || '[]');
+        tickers = Array.isArray(parsed) ? parsed.join(', ') : String(parsed);
+      } catch {
+        tickers = String(event.affected_tickers || '');
+      }
       console.log(`  🔔 ${event.headline}`);
       console.log(`     ${event.event_type} | ${tickers} | ${event.source}`);
       if (event.source_url) console.log(`     🔗 ${event.source_url}`);
