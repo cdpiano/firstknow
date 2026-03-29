@@ -1,0 +1,30 @@
+name: Publish to ClawHub
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'backend/**'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - run: npm i -g clawhub
+
+      - name: Publish to ClawHub
+        env:
+          CLAWHUB_TOKEN: ${{ secrets.CLAWHUB_TOKEN }}
+        run: |
+          clawhub publish . \
+            --slug firstknow \
+            --name "FirstKnow — Portfolio Intelligence" \
+            --version 0.0.0-git.${{ github.sha }} \
+            --tags latest \
+            --token "$CLAWHUB_TOKEN"
