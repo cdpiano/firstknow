@@ -162,7 +162,9 @@ cd ${CLAUDE_SKILL_DIR}/scripts && node check-latest.js
 ```
 
 This fetches the latest events from the backend for the user's tickers.
-If there are matching events, summarize them briefly.
+If there are matching events, forward them to the user **as-is** — do NOT
+summarize or condense. Each event should show its headline, summary, source link,
+and timestamp individually. Preserve all links.
 If no events, say: "No breaking news for your holdings right now. I'll alert you
 when something happens."
 
@@ -280,8 +282,10 @@ cd ${CLAUDE_SKILL_DIR}/scripts && node sync-settings.js
 cd ${CLAUDE_SKILL_DIR}/scripts && node check-latest.js
 ```
 
-Fetch latest events for user's tickers from backend API. Summarize any recent
-events. If no events, say so.
+Fetch latest events for user's tickers from backend API. Forward each event
+individually to the user — do NOT summarize or condense into a single paragraph.
+Each event must include its headline, summary, source link, and timestamp.
+If no events, say so.
 
 ---
 

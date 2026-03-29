@@ -47,6 +47,7 @@ async function main() {
       }
       console.log(`  🔔 ${event.headline}`);
       console.log(`     ${event.event_type} | ${tickers} | ${event.source}`);
+      if (event.raw_content) console.log(`     📰 ${event.raw_content}`);
       if (event.source_url) console.log(`     🔗 ${event.source_url}`);
       console.log(`     ${event.timestamp}\n`);
     }
