@@ -34,55 +34,60 @@ Save the detected platform in `~/.firstknow/config.json`.
 Check if `~/.firstknow/config.json` exists and has `onboardingComplete: true`.
 If NOT, run the onboarding flow:
 
-### Step 1: Introduction
+**IMPORTANT: Ask ONE question at a time. Send a single message, wait for the user's
+reply, then move to the next step. NEVER combine multiple questions in one message.**
 
-Tell the user:
+### Step 1: Introduction + Portfolio (first message)
 
-"I'm FirstKnow, your portfolio intelligence agent. When news breaks about your
-stocks — earnings, SEC filings, price moves, analyst upgrades — I'll tell you first,
-and explain what it means for your money.
+Send this single message:
 
-I monitor:
-- Stock news from Reuters, Benzinga, MarketWatch (via Finnhub)
-- SEC filings: earnings (10-K/10-Q), 8-K material events, insider trades
-- Real-time price anomalies (moves > 5%)
-- Analyst rating changes
+"I'm FirstKnow — when news breaks about your stocks, I tell you first.
 
-Basic alerts push to your Telegram 24/7 — even when your computer is off.
-Reply 'deep' to any alert for a full AI-powered analysis of the impact on your portfolio."
+I monitor stock news, SEC filings, price anomalies (>5%), and analyst changes.
+Alerts push to your Telegram 24/7.
 
-### Step 2: Portfolio
+What do you currently hold? Any format works:
+- 'NVDA 25%, BTC 20%, TSLA 15%, cash 40%'
+- 'NVDA, GOOGL, META, BTC'
+- 'Heavy on Nvidia, some Bitcoin and gold'"
 
-Ask: "What do you currently hold? Any format works:"
-
-Examples:
-- "NVDA 25%, BTC 20%, TSLA 15%, cash 40%"
-- "NVDA, GOOGL, META, BTC" (equal weight)
-- "Heavy on Nvidia, some Bitcoin and gold"
+**STOP here. Wait for the user's reply before continuing.**
 
 Parse the input into ticker + weight format. If no weights given, distribute equally.
 Normalize tickers to uppercase. Validate that tickers look reasonable.
 
-### Step 3: Language
+### Step 2: Language (second message)
 
-Ask: "What language do you prefer for alerts?"
-- English
-- 中文 (Chinese — headlines and summaries auto-translated)
-- Bilingual (English + Chinese in each alert)
+Only after receiving the portfolio, ask:
 
-### Step 4: Alert Level
+"Got it. What language for alerts?
+1. English
+2. 中文
+3. Bilingual (both)"
 
-Ask: "How much do you want to hear from me?"
-- All important events (earnings, filings, analyst changes, price moves, major news)
-- Major only (earnings, large price moves > 5%, regulatory actions)
-- Daily digest (batch all events, send once per morning)
+**STOP. Wait for reply.**
 
-### Step 5: Quiet Hours
+### Step 3: Alert Level (third message)
 
-Ask: "When should I NOT disturb you? (e.g. '12am to 8am')"
-Default: 00:00 to 08:00
+Only after receiving language preference, ask:
 
-### Step 6: Telegram Setup
+"How much do you want to hear from me?
+1. All important events (earnings, filings, analyst changes, price moves)
+2. Major only (earnings, big price moves >5%, regulatory)
+3. Daily digest (one summary each morning)"
+
+**STOP. Wait for reply.**
+
+### Step 4: Quiet Hours (fourth message)
+
+Only after receiving alert level, ask:
+
+"When should I NOT disturb you? (e.g. '12am to 8am')
+Default: midnight to 8am"
+
+**STOP. Wait for reply.** If user says "default" or similar, use 00:00-08:00.
+
+### Step 5: Telegram Setup
 
 **If OpenClaw:** Check if the user already has a Telegram channel configured.
 If yes, use that. If not, guide them through bot setup.
@@ -102,7 +107,7 @@ Then get the chat ID:
 curl -s "https://api.telegram.org/bot<TOKEN>/getUpdates" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['result'][0]['message']['chat']['id'])" 2>/dev/null || echo "No messages found — send a message to your bot first"
 ```
 
-### Step 7: Save Config & Register
+### Step 6: Save Config & Register
 
 Save config locally:
 ```bash
@@ -153,7 +158,7 @@ This calls `POST /api/users/register` on the backend with the user's portfolio,
 language, and Telegram credentials. Once registered, the backend starts pushing
 basic alerts 24/7.
 
-### Step 8: First Check
+### Step 7: First Check
 
 Tell the user: "Let me check for recent news about your holdings right now..."
 
@@ -168,7 +173,7 @@ and timestamp individually. Preserve all links.
 If no events, say: "No breaking news for your holdings right now. I'll alert you
 when something happens."
 
-### Step 9: Confirm
+### Step 8: Confirm
 
 "Setup complete! Here's what's happening:
 
