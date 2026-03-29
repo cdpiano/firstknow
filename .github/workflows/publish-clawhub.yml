@@ -18,13 +18,13 @@ jobs:
 
       - run: npm i -g clawhub
 
+      - name: Authenticate with ClawHub
+        run: clawhub login --token "${{ secrets.CLAWHUB_TOKEN }}"
+
       - name: Publish to ClawHub
-        env:
-          CLAWHUB_TOKEN: ${{ secrets.CLAWHUB_TOKEN }}
         run: |
           clawhub publish . \
             --slug firstknow \
             --name "FirstKnow — Portfolio Intelligence" \
             --version 0.0.0-git.${{ github.sha }} \
-            --tags latest \
-            --token "$CLAWHUB_TOKEN"
+            --tags latest
