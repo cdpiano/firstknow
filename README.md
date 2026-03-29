@@ -55,15 +55,21 @@ Action items:
 
 ## Installation
 
-### OpenClaw
+### OpenClaw (via ClawHub)
+
+```bash
+clawhub install firstknow
+```
+
+Then message your OpenClaw agent (via Telegram, Feishu, Discord, etc.):
+"set up firstknow"
+
+### OpenClaw (manual)
 
 ```bash
 git clone https://github.com/cdpiano/firstknow.git ~/.claude/skills/firstknow
 cd ~/.claude/skills/firstknow/scripts && npm install
 ```
-
-Then message your OpenClaw agent (via Telegram, Feishu, Discord, etc.):
-"set up firstknow"
 
 ### Claude Code
 

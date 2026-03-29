@@ -53,15 +53,21 @@ NVDA 在随后 3 周内上涨了 12%...
 
 ## 安装
 
-### OpenClaw
+### OpenClaw（通过 ClawHub）
+
+```bash
+clawhub install firstknow
+```
+
+然后在 OpenClaw 的任意频道（Telegram、飞书、Discord 等）发送：
+"设置 firstknow"
+
+### OpenClaw（手动安装）
 
 ```bash
 git clone https://github.com/cdpiano/firstknow.git ~/.claude/skills/firstknow
 cd ~/.claude/skills/firstknow/scripts && npm install
 ```
-
-然后在 OpenClaw 的任意频道（Telegram、飞书、Discord 等）发送：
-"设置 firstknow"
 
 ### Claude Code
 
