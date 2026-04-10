@@ -281,6 +281,37 @@ export async function recordPush(db, userId, ticker, eventId, telegramMessageId 
 }
 
 /**
+ * Find the event_id associated with a Telegram message ID (for "deep" replies).
+ */
+export async function getEventByTelegramMessageId(db, userId, telegramMessageId) {
+  const row = await db
+    .prepare(
+      `SELECT ph.event_id, e.*
+       FROM push_history ph
+       LEFT JOIN events e ON ph.event_id = e.event_id
+       WHERE ph.user_id = ? AND ph.telegram_message_id = ?
+       LIMIT 1`
+    )
+    .bind(userId, telegramMessageId)
+    .first();
+
+  if (!row || !row.event_id) return null;
+
+  return {
+    event_id: row.event_id,
+    timestamp: row.timestamp,
+    headline: row.headline,
+    source: row.source,
+    source_url: row.source_url,
+    event_type: row.event_type,
+    affected_tickers: safeJsonParse(row.affected_tickers, []),
+    price_context: safeJsonParse(row.price_context, {}),
+    raw_content: row.raw_content,
+    importance: row.importance,
+  };
+}
+
+/**
  * Get recent pushes that haven't been translated yet (for OpenClaw skill to process).
  */
 export async function getPendingTranslations(db, userId) {

@@ -11,6 +11,7 @@ import {
   setUserHoldings,
   syncTrackedTickersFromUsers,
   getEvents,
+  getEventByTelegramMessageId,
 } from './database.js';
 import { sendTelegramMessage } from './telegram-push.js';
 import { generateDeepAnalysis } from './deep-analysis.js';
@@ -74,6 +75,7 @@ export async function handleTelegramWebhook(update, env) {
 
   const chatId = String(message.chat.id);
   const text = message.text.trim();
+  const replyToMessageId = message.reply_to_message?.message_id?.toString() || null;
   const botToken = env.TELEGRAM_BOT_TOKEN;
 
   if (!botToken) {
@@ -98,7 +100,7 @@ export async function handleTelegramWebhook(update, env) {
     } else if (text.startsWith('/check')) {
       await handleCheck(chatId, env, botToken);
     } else if (/^(deep|深度)$/i.test(text)) {
-      await handleDeep(chatId, env, botToken);
+      await handleDeep(chatId, env, botToken, replyToMessageId);
     } else if (text === '/help') {
       await handleHelp(chatId, botToken);
     } else {
@@ -365,7 +367,7 @@ async function handleCheck(chatId, env, botToken) {
   await sendTelegramMessage(chatId, lines.join('\n'), botToken);
 }
 
-async function handleDeep(chatId, env, botToken) {
+async function handleDeep(chatId, env, botToken, replyToMessageId = null) {
   const user = await getUser(env.DB, chatId);
   if (!user) {
     await sendTelegramMessage(chatId, '👋 Send /start first.', botToken);
@@ -378,19 +380,27 @@ async function handleDeep(chatId, env, botToken) {
     return;
   }
 
-  // Find the most recent event for user's tickers
-  const tickers = holdings.map((h) => h.ticker);
-  const since = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
-  const events = await getEvents(env.DB, { since, tickers, limit: 1 });
+  // Try to find the specific event the user replied to
+  let event = null;
 
-  if (events.length === 0) {
+  if (replyToMessageId) {
+    event = await getEventByTelegramMessageId(env.DB, chatId, replyToMessageId);
+  }
+
+  // Fallback: get the most recent event for user's tickers
+  if (!event) {
+    const tickers = holdings.map((h) => h.ticker);
+    const since = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
+    const events = await getEvents(env.DB, { since, tickers, limit: 1 });
+    event = events[0];
+  }
+
+  if (!event) {
     await sendTelegramMessage(chatId, '🤷 No recent events found for your holdings to analyze.', botToken);
     return;
   }
 
-  await sendTelegramMessage(chatId, '🔍 Running deep analysis... (10-15 seconds)', botToken);
-
-  const event = events[0];
+  await sendTelegramMessage(chatId, `🔍 Analyzing: ${event.headline}\n\nPlease wait 10-15 seconds...`, botToken);
   const analysis = await generateDeepAnalysis(event, holdings, user.language || 'en', env.ANTHROPIC_API_KEY);
 
   // Split long messages for Telegram's 4096 char limit
