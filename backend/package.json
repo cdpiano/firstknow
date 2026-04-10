@@ -1,0 +1,14 @@
+{
+  "name": "firstknow-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "FirstKnow news event aggregation backend on Cloudflare Workers",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:init": "wrangler d1 execute firstknow-db --file=src/schema.sql"
+  },
+  "devDependencies": {
+    "wrangler": "^3.99.0"
+  }
+}

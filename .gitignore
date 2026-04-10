@@ -4,8 +4,9 @@ node_modules/
 .wrangler/
 *.lock
 
-# Backend (private, deployed separately)
-backend/
+# Backend build artifacts (source is tracked)
+backend/.wrangler/
+backend/node_modules/
 
 # User local data
 ~/.firstknow/

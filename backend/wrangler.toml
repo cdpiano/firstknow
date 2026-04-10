@@ -1,0 +1,24 @@
+# FirstKnow Backend — Plan C
+# Template-based push architecture (no LLM in backend)
+#
+# Secrets needed (set via `wrangler secret put`):
+#   FINNHUB_API_KEY  — Finnhub API key for news + price data (worker-level secret)
+#
+# Note: Each user provides their own TELEGRAM_BOT_TOKEN during registration.
+# Bot tokens are stored per-user in the D1 database, not as worker secrets.
+
+account_id = "9cfbe6ec3dce6c6659223bbb75cb7472"
+name = "firstknow-backend"
+main = "src/index.js"
+compatibility_date = "2024-12-01"
+
+[vars]
+ENVIRONMENT = "production"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "firstknow-db"
+database_id = "213c917e-db55-4511-a8dd-20389b024dfd"
+
+# [triggers]
+# crons = ["*/5 * * * *", "*/1 * * * *"]
